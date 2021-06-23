@@ -1,0 +1,36 @@
+name: BlockShuffle
+version: 0.10.0
+api-version: 1.17
+author: Oats
+main: cloud.ferguson.BlockShuffle.Main
+description: Race to stand on your randomly chosen block!
+commands:
+  shuffleblock:
+    aliases:
+    - sb
+    description: Shuffle your goal block for if you can't get it.
+  blockshufflecoop:
+    aliases:
+    - bscoop
+    - bsc
+    description: Toggles Cooperative mode where all players work towards the same block.
+  blockshufflenether:
+    aliases:
+    - bsnether
+    - bsn
+    description: 'Toggles the inclusion of Nether blocks in the random pool. (Default: Yes)'
+  blockshuffleocean:
+    aliases:
+    - bsocean
+    - bso
+    description: 'Toggles the inclusion of Ocean blocks in the random pool. (Default: Yes)'
+  blockshuffleend:
+    aliases:
+    - bsend
+    - bse
+    description: 'Toggles the inclusion of End blocks in the random pool. (Default: No)'
+  blockshuffledyed:
+    aliases:
+    - bsdyed
+    - bsd
+    description: 'Toggles the inclusion of Dyed blocks in the random pool. (Default: Yes)'
