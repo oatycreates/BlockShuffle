@@ -45,15 +45,17 @@ public class Main extends JavaPlugin {
   public Random blockRandomiser;
   public ArrayList<Material> availableBlocks;
   public boolean allowNether = true;
-  public boolean allowOcean = true;
+  public boolean allowOcean = false;
   public boolean allowEnd = false;
   public boolean allowDyed = true;
   private List<Material> invalidBlocks = Arrays.asList(Material.END_PORTAL, Material.NETHER_PORTAL, Material.WATER,
       Material.BUBBLE_COLUMN, Material.LAVA, Material.SPAWNER, Material.BEACON, Material.WITHER_ROSE,
-      Material.POTTED_WITHER_ROSE, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.JIGSAW);
+      Material.POTTED_WITHER_ROSE, Material.STRUCTURE_BLOCK, Material.STRUCTURE_VOID, Material.JIGSAW,
+      Material.BARRIER);
   private List<Material> netherBlocks = Arrays.asList(Material.ANCIENT_DEBRIS, Material.ENDER_CHEST, Material.BASALT,
       Material.GLOWSTONE, Material.SHROOMLIGHT, Material.TWISTING_VINES, Material.TWISTING_VINES_PLANT,
-      Material.WEEPING_VINES, Material.WEEPING_VINES_PLANT);
+      Material.WEEPING_VINES, Material.WEEPING_VINES_PLANT, Material.DAYLIGHT_DETECTOR, Material.OBSERVER,
+      Material.COMPARATOR, Material.REDSTONE_LAMP);
   private List<Material> oceanBlocks = Arrays.asList(Material.SEA_LANTERN, Material.SEA_PICKLE, Material.SEAGRASS,
       Material.TALL_SEAGRASS, Material.KELP, Material.KELP_PLANT, Material.DRIED_KELP_BLOCK, Material.SPONGE,
       Material.WET_SPONGE);
@@ -164,7 +166,12 @@ public class Main extends JavaPlugin {
   public void onPlayerFindBlock(Player a_player, Block a_targetBlock) {
     LocalDateTime startTime = playerGoalAssignedAt.get(a_player);
     Duration timeTaken = Duration.between(startTime, LocalDateTime.now());
-    String formattedTimeTaken = timeTaken.toMinutes() + ":" + (timeTaken.getSeconds() % 60);
+    // Add in leading zeros to clarify the time display
+    long timeTakenSeconds = timeTaken.getSeconds() % 60;
+    long timeTakenMinutes = timeTaken.toMinutes();
+    String formattedTimeTakenSeconds = timeTakenSeconds < 10 ? "0" + timeTakenSeconds : Long.toString(timeTakenSeconds);
+    String formattedTimeTakenMinutes = timeTakenMinutes < 10 ? "0" + timeTakenMinutes : Long.toString(timeTakenMinutes);
+    String formattedTimeTaken = formattedTimeTakenMinutes + ":" + formattedTimeTakenSeconds;
 
     if (isCoop) {
       if (!playerGoalCompletions.containsKey(null)) {
@@ -222,7 +229,12 @@ public class Main extends JavaPlugin {
     availableBlocks.removeAll(invalidBlocks);
     availableBlocks
         .removeIf((Material mat) -> !mat.isBlock() || mat.isLegacy() || mat.isAir() || mat.name().contains("_SKULL")
-            || mat.name().contains("_HEAD") || mat.name().contains("_EGG") || mat.name().contains("COMMAND_BLOCK"));
+            || mat.name().contains("_HEAD") || mat.name().contains("_EGG") || mat.name().contains("COMMAND_BLOCK")
+            || mat.name().contains("INFESTED_"));
+
+    // Remove any aged versions of blocks that age over time so the player doesn't have to wait for them
+    availableBlocks .removeIf((Material mat) -> mat.name().contains("EXPOSED_") || mat.name().contains("WEATHERED_") ||
+        mat.name().contains("OXIDIZED_"));
 
     if (!allowNether) {
       Bukkit.broadcastMessage(
@@ -243,8 +255,7 @@ public class Main extends JavaPlugin {
     if (!allowEnd) {
       Bukkit.broadcastMessage(pluginChatPrefix + "Removing §8End§r blocks from random pool, toggle with §l/bsend§r");
       availableBlocks.removeIf((Material mat) -> mat.name().contains("DRAGON_") || mat.name().contains("END_")
-          || mat.name().contains("INFESTED_") || mat.name().contains("PURPUR_") || mat.name().contains("SHULKER_")
-          || mat.name().contains("CHORUS"));
+          || mat.name().contains("PURPUR_") || mat.name().contains("SHULKER_") || mat.name().contains("CHORUS"));
     }
 
     if (!allowDyed) {

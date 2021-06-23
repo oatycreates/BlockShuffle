@@ -1,5 +1,5 @@
 name: BlockShuffle
-version: 0.10.0
+version: 0.10.1
 api-version: 1.17
 author: Oats
 main: cloud.ferguson.BlockShuffle.Main
